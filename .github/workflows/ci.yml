@@ -57,7 +57,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          components-paths: '{"grid-bot:2024.06.22-01.02.19-0bf8131":"./__tests__/test.component.yaml"}'
+          components: '{"grid-bot:2024.06.22-01.02.19-0bf8131":"./__tests__/test.component.yaml"}'
 
       - name: Print Output
         id: output

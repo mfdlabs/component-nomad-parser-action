@@ -14,7 +14,7 @@ export async function run(): Promise<void> {
       core.getInput('components', { required: true }),
     ) as Record<string, string>
     const datacenters = (
-      core.getInput('datacenters', { required: true })?.split(',') || ['*']
+      core.getInput('datacenters', { required: false })?.split(',') || ['*']
     )
       .map(dc => dc.trim())
       .filter(dc => dc.length > 0)

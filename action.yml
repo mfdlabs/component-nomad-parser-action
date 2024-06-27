@@ -9,7 +9,7 @@ branding:
 
 # Define your inputs here.
 inputs:
-  components-paths:
+  components:
     description: 'The list of paths to the components'
     required: true
 
