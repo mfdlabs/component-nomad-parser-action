@@ -24967,7 +24967,7 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
         componentConfiguration = yaml_1.default.parse(replacedContents);
     }
     catch (error) {
-        (0, core_1.warning)(`Failed to parse the component configuration file: ${error?.message}`);
+        (0, core_1.warning)(`Failed to parse the component configuration file: ${error}`);
         return [false, undefined];
     }
     if (!componentConfiguration) {
