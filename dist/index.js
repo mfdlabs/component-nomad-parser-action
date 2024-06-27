@@ -25173,7 +25173,7 @@ const nomad_job_1 = __nccwpck_require__(2850);
 async function run() {
     try {
         const components = JSON.parse(core.getInput('components', { required: true }));
-        const datacenters = (core.getInput('datacenters', { required: true })?.split(',') || ['*'])
+        const datacenters = (core.getInput('datacenters', { required: false })?.split(',') || ['*'])
             .map(dc => dc.trim())
             .filter(dc => dc.length > 0);
         const ouputJobs = {};

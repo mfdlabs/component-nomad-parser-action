@@ -13,7 +13,7 @@ inputs:
     description: 'The list of paths to the components'
     required: true
 
-  data-centers:
+  datacenters:
     description: 'The list of data centers'
     required: false
     default: '*'
