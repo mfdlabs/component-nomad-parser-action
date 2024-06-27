@@ -1,5 +1,5 @@
-import { ComponentContainerDeploymentConfigurationType } from "./types/component_container_deployment_configuration_type";
-import { ComponentContainerDeploymentConfiguration } from "./component_container_deployment_configuration";
+import { ComponentContainerDeploymentConfigurationType } from './types/component_container_deployment_configuration_type'
+import { ComponentContainerDeploymentConfiguration } from './component_container_deployment_configuration'
 
 /**
  * Component Deployment Configuration model
@@ -11,7 +11,7 @@ export interface ComponentDeploymentConfiguration {
    * @memberof ComponentDeploymentConfiguration
    * @default 1
    */
-  count?: number;
+  count?: number
 
   /**
    * The type of Nomad job.
@@ -19,7 +19,7 @@ export interface ComponentDeploymentConfiguration {
    * @memberof ComponentDeploymentConfiguration
    * @default 'service'
    */
-  type?: ComponentContainerDeploymentConfigurationType;
+  type?: ComponentContainerDeploymentConfigurationType
 
   /**
    * The name of the Nomad job.
@@ -28,7 +28,7 @@ export interface ComponentDeploymentConfiguration {
    * @optional
    * @remarks If not provided, the component name will be used.
    */
-  job?: string;
+  job?: string
 
   /**
    * Any metadata to attach to the Nomad job.
@@ -36,7 +36,7 @@ export interface ComponentDeploymentConfiguration {
    * @memberof ComponentDeploymentConfiguration
    * @optional
    */
-  metadata?: Map<string, string>;
+  metadata?: Map<string, string>
 
   /**
    * The container deployment configuration.
@@ -44,5 +44,5 @@ export interface ComponentDeploymentConfiguration {
    * @memberof ComponentDeploymentConfiguration
    * @required
    */
-  containers: ComponentContainerDeploymentConfiguration[];
+  containers: ComponentContainerDeploymentConfiguration[]
 }

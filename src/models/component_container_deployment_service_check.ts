@@ -11,7 +11,7 @@ export interface ComponentContainerDeploymentServiceCheck {
    * @required
    * @remarks Maps to job.group.services.checks.type.
    */
-  type: string;
+  type: string
 
   /**
    * Gets the port to check.
@@ -19,7 +19,7 @@ export interface ComponentContainerDeploymentServiceCheck {
    * @memberof ComponentContainerDeploymentServiceCheck
    * @optional
    */
-  port?: string;
+  port?: string
 
   /**
    * Gets the path to check.
@@ -27,5 +27,5 @@ export interface ComponentContainerDeploymentServiceCheck {
    * @memberof ComponentContainerDeploymentServiceCheck
    * @optional
    */
-  path?: string;
+  path?: string
 }

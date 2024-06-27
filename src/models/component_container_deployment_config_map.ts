@@ -1,4 +1,4 @@
-import { ComponentContainerDeploymentConfigMapChangeMode } from "./types/component_container_deployment_config_map_change_mode";
+import { ComponentContainerDeploymentConfigMapChangeMode } from './types/component_container_deployment_config_map_change_mode'
 
 /**
  * Component Container Deployment Config Map model
@@ -12,7 +12,7 @@ export interface ComponentContainerDeploymentConfigMap {
    * @memberof ComponentContainerDeploymentConfigMap
    * @required
    */
-  destination: string;
+  destination: string
 
   /**
    * Determines if the config map is an env file.
@@ -21,7 +21,7 @@ export interface ComponentContainerDeploymentConfigMap {
    * @optional
    * @default true
    */
-  env?: boolean;
+  env?: boolean
 
   /**
    * Gets the change mode for the config map.
@@ -30,7 +30,7 @@ export interface ComponentContainerDeploymentConfigMap {
    * @optional
    * @default 'restart'
    */
-  on_change?: ComponentContainerDeploymentConfigMapChangeMode;
+  on_change?: ComponentContainerDeploymentConfigMapChangeMode
 
   /**
    * Gets the template data for the config map.
@@ -38,5 +38,5 @@ export interface ComponentContainerDeploymentConfigMap {
    * @memberof ComponentContainerDeploymentConfigMap
    * @required
    */
-  data: string;
+  data: string
 }

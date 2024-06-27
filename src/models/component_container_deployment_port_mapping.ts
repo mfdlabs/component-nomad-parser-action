@@ -10,7 +10,7 @@ export interface ComponentContainerDeploymentPortMapping {
    * @memberof ComponentContainerDeploymentPortMapping
    * @optional
    */
-  static?: number;
+  static?: number
 
   /**
    * Gets a port inside the container to expose, only applicable when NetworkMode is 'bridge'.
@@ -18,5 +18,5 @@ export interface ComponentContainerDeploymentPortMapping {
    * @memberof ComponentContainerDeploymentPortMapping
    * @optional
    */
-  to?: number;
+  to?: number
 }

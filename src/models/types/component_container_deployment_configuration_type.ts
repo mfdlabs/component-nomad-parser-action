@@ -3,4 +3,4 @@
  * @remarks Maps to the Nomad job type.
  * @see https://www.nomadproject.io/docs/job-specification/type
  */
-export type ComponentContainerDeploymentConfigurationType = 'service' | 'system';
+export type ComponentContainerDeploymentConfigurationType = 'service' | 'system'

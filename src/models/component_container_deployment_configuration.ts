@@ -1,7 +1,7 @@
-import { ComponentContainerDeploymentConfigMap } from "./component_container_deployment_config_map";
-import { ComponentContainerDeploymentNetwork } from "./component_container_deployment_network";
-import { ComponentContainerDeploymentResources } from "./component_container_deployment_resources";
-import { ComponentContainerDeploymentService } from "./component_container_deployment_service";
+import { ComponentContainerDeploymentConfigMap } from './component_container_deployment_config_map'
+import { ComponentContainerDeploymentNetwork } from './component_container_deployment_network'
+import { ComponentContainerDeploymentResources } from './component_container_deployment_resources'
+import { ComponentContainerDeploymentService } from './component_container_deployment_service'
 
 /**
  * Component Container Deployment Configuration model
@@ -14,7 +14,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @memberof ComponentContainerDeploymentConfiguration
    * @required
    */
-  image: string;
+  image: string
 
   /**
    * Gets the resources to allocate.
@@ -23,7 +23,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @optional
    * @remarks Maps to job.group.resources.
    */
-  resources?: ComponentContainerDeploymentResources;
+  resources?: ComponentContainerDeploymentResources
 
   /**
    * Gets the network configuration.
@@ -31,7 +31,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @memberof ComponentContainerDeploymentConfiguration
    * @optional
    */
-  network?: ComponentContainerDeploymentNetwork;
+  network?: ComponentContainerDeploymentNetwork
 
   /**
    * Gets the services to expose.
@@ -40,7 +40,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @optional
    * @remarks Maps to job.group.services.
    */
-  services?: ComponentContainerDeploymentService[];
+  services?: ComponentContainerDeploymentService[]
 
   /**
    * Gets the host volume mounts to expose.
@@ -50,7 +50,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @remarks Maps to job.group.volumes.
    * @remarks The format is 'host_path:container_path'.
    */
-  volumes?: string[];
+  volumes?: string[]
 
   /**
    * Gets a map of optional driver options.
@@ -58,7 +58,7 @@ export interface ComponentContainerDeploymentConfiguration {
    * @memberof ComponentContainerDeploymentNetwork
    * @optional
    */
-  driver_opts?: Map<string, string>;
+  driver_opts?: Map<string, string>
 
   /**
    * Gets the config maps to expose.
@@ -67,5 +67,5 @@ export interface ComponentContainerDeploymentConfiguration {
    * @optional
    * @remarks Maps to job.group.templates.
    */
-  config_maps?: ComponentContainerDeploymentConfigMap[];
+  config_maps?: ComponentContainerDeploymentConfigMap[]
 }

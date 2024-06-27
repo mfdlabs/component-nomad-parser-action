@@ -1,5 +1,5 @@
-import { ComponentContainerDeploymentPortMapping } from "./component_container_deployment_port_mapping";
-import { ComponentContainerDeploymentNetworkMode } from "./types/component_container_deployment_network_mode";
+import { ComponentContainerDeploymentPortMapping } from './component_container_deployment_port_mapping'
+import { ComponentContainerDeploymentNetworkMode } from './types/component_container_deployment_network_mode'
 
 /**
  * Component Container Deployment Network model
@@ -14,7 +14,7 @@ export interface ComponentContainerDeploymentNetwork {
    * @default 'bridge'
    * @remarks Maps to job.group.network.mode.
    */
-  mode?: ComponentContainerDeploymentNetworkMode;
+  mode?: ComponentContainerDeploymentNetworkMode
 
   /**
    * Gets the port mappings to expose.
@@ -23,5 +23,5 @@ export interface ComponentContainerDeploymentNetwork {
    * @optional
    * @remarks Maps to job.group.network.ports.
    */
-  ports?: Map<string, ComponentContainerDeploymentPortMapping>;
+  ports?: Map<string, ComponentContainerDeploymentPortMapping>
 }

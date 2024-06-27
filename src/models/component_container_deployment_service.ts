@@ -1,4 +1,4 @@
-import { ComponentContainerDeploymentServiceCheck } from "./component_container_deployment_service_check";
+import { ComponentContainerDeploymentServiceCheck } from './component_container_deployment_service_check'
 
 /**
  * Component Container Deployment Service model
@@ -12,7 +12,7 @@ export interface ComponentContainerDeploymentService {
    * @memberof ComponentContainerDeploymentService
    * @required
    */
-  name: string;
+  name: string
 
   /**
    * Gets the port to map to the service.
@@ -20,7 +20,7 @@ export interface ComponentContainerDeploymentService {
    * @memberof ComponentContainerDeploymentService
    * @required
    */
-  port: string;
+  port: string
 
   /**
    * Gets the tags to attach to the service.
@@ -28,7 +28,7 @@ export interface ComponentContainerDeploymentService {
    * @memberof ComponentContainerDeploymentService
    * @optional
    */
-  tags?: string[];
+  tags?: string[]
 
   /**
    * Gets the checks to perform on the service.
@@ -36,5 +36,5 @@ export interface ComponentContainerDeploymentService {
    * @memberof ComponentContainerDeploymentService
    * @optional
    */
-  checks?: ComponentContainerDeploymentServiceCheck[];
+  checks?: ComponentContainerDeploymentServiceCheck[]
 }

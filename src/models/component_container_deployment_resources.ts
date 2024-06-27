@@ -10,7 +10,7 @@ export interface ComponentContainerDeploymentResources {
    * @memberof ComponentContainerDeploymentResources
    * @optional
    */
-  cpu: number;
+  cpu: number
 
   /**
    * Gets the memory resources to allocate.
@@ -19,5 +19,5 @@ export interface ComponentContainerDeploymentResources {
    * @optional
    * @remarks Maps to job.group.resources.memory.
    */
-  ram: number;
+  ram: number
 }

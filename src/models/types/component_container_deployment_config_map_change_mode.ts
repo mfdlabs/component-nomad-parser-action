@@ -3,4 +3,4 @@
  * @remarks Maps to the Nomad template change mode.
  * @see https://www.nomadproject.io/docs/job-specification/template
  */
-export type ComponentContainerDeploymentConfigMapChangeMode = 'noop' | 'restart';
+export type ComponentContainerDeploymentConfigMapChangeMode = 'noop' | 'restart'

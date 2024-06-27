@@ -15,53 +15,54 @@ const runMock = jest.spyOn(main, 'run')
 
 // Mock the GitHub Actions core library
 let debugMock: jest.SpiedFunction<typeof core.debug>
-let errorMock: jest.SpiedFunction<typeof core.error>
 let warningMock: jest.SpiedFunction<typeof core.warning>
 let getInputMock: jest.SpiedFunction<typeof core.getInput>
 let setFailedMock: jest.SpiedFunction<typeof core.setFailed>
-let setOutputMock: jest.SpiedFunction<typeof core.setOutput>
 
 describe('action', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
     debugMock = jest.spyOn(core, 'debug').mockImplementation()
-    errorMock = jest.spyOn(core, 'error').mockImplementation()
     warningMock = jest.spyOn(core, 'warning').mockImplementation()
     getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
     setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
-    setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
-  });
+  })
 
   it('should run the action', async () => {
     getInputMock.mockImplementation(name => {
       switch (name) {
         case 'components':
-          return JSON.stringify({ 'grid-bot:2024.06.22-01.02.19-0bf8131': path.join(__dirname, 'test.component.yaml') });
+          return JSON.stringify({
+            'grid-bot:2024.06.22-01.02.19-0bf8131': path.join(
+              __dirname,
+              'test.component.yaml',
+            ),
+          })
         case 'datacenters':
-          return 'cou1';
+          return 'cou1'
         default:
           return ''
       }
-    });
+    })
 
     debugMock.mockImplementation((message: string) => {
       console.log(`DEBUG: ${message}`)
-    });
+    })
 
     warningMock.mockImplementation((message: string | Error) => {
       console.log(`WARNING: ${message}`)
-    });
+    })
 
     setFailedMock.mockImplementation((message: string | Error) => {
       console.log(`ERROR: ${message}`)
-    });
+    })
 
-    process.env.VERSION = '2024.06.22-01.02.19-0bf8131';
-    process.env.NOMAD_ENVIRONMENT = 'production';
-    process.env.NOMAD_SHORT_ENVIRONMENT = 'prod';
+    process.env.VERSION = '2024.06.22-01.02.19-0bf8131'
+    process.env.NOMAD_ENVIRONMENT = 'production'
+    process.env.NOMAD_SHORT_ENVIRONMENT = 'prod'
 
-    await main.run();
+    await main.run()
 
     expect(runMock).toHaveBeenCalled()
   })

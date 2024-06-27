@@ -1,4 +1,4 @@
-import { ComponentDeploymentConfiguration } from "./component_deployment_configuration";
+import { ComponentDeploymentConfiguration } from './component_deployment_configuration'
 
 /**
  * ComponentConfiguration model
@@ -10,7 +10,7 @@ export interface ComponentConfiguration {
    * @memberof ComponentConfiguration
    * @required
    */
-  component: string;
+  component: string
 
   /**
    * The deployment configuration.
@@ -20,5 +20,5 @@ export interface ComponentConfiguration {
    * @remarks If not provided, the component will not be deployed.
    * @remarks Maps to the Nomad job section.
    */
-  deployment?: ComponentDeploymentConfiguration;
+  deployment?: ComponentDeploymentConfiguration
 }
