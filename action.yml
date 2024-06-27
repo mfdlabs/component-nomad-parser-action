@@ -1,23 +1,27 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Component Nomad Job File Parser'
+description: 'Parses Nomad job files from MFDLABS Components v4'
+author: 'MFDLABS'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
-  color: 'red'
+  icon: arrow-up
+  color: gray-dark
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  components-paths:
+    description: 'The list of paths to the components'
     required: true
-    default: '1000'
+
+  data-centers:
+    description: 'The list of data centers'
+    required: false
+    default: '*'
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  nomad-files:
+    description: 'Key value pairs of the component name and the nomad job file'
 
 runs:
   using: node20

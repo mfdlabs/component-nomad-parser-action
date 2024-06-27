@@ -1,16 +1,16 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
-  "author": "",
+  "name": "component-nomad-parser-action",
+  "description": "GitHub Action to parse Nomad job files from MFDLABS Components v4",
+  "version": "1.0.0",
+  "author": "MFDLABS <ops+javascript-squad@vmminfra.net>",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/mfdlabs/component-nomad-parser-action",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/mfdlabs/component-nomad-parser-action"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/mfdlabs/component-nomad-parser-action/issues"
   },
   "keywords": [
     "actions",
@@ -66,7 +66,8 @@
     ]
   },
   "dependencies": {
-    "@actions/core": "^1.10.1"
+    "@actions/core": "^1.10.1",
+    "yaml": "^2.4.5"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

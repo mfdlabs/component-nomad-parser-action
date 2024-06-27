@@ -1,5 +1,8 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+
+import { getComponentConfiguration } from './components-v4';
+import { generateNomadJob } from './nomad/nomad_job';
+import { ComponentDeploymentConfiguration } from "./models/component_deployment_configuration";
 
 /**
  * The main function for the action.
@@ -7,20 +10,33 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const components = JSON.parse(core.getInput('components', { required: true })) as Record<string, string>;
+    const datacenters = (core.getInput('datacenters', { required: true })?.split(',') || ['*']).map(dc => dc.trim()).filter(dc => dc.length > 0);
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    for (const [component, componentConfigurationPath] of Object.entries(components)) {
+      if (!component || !componentConfigurationPath) {
+        core.setFailed('Invalid component configuration');
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+        return;
+      }
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+      const [success, componentConfiguration] = getComponentConfiguration(component, componentConfigurationPath);
+
+      if (!success || !componentConfiguration) {
+        core.setFailed(`Failed to read the component configuration for ${component}`);
+
+        return;
+      }
+
+      const [componentName, componentVersion] = component.split(':');
+
+      const job = generateNomadJob(componentName, componentVersion, datacenters, componentConfiguration.deployment as ComponentDeploymentConfiguration);
+
+      // Output the Nomad job
+      core.setOutput(component, job);
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    if (error instanceof Error) core.setFailed(error.message);
   }
 }
