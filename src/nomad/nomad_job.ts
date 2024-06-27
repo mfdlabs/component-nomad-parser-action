@@ -20,10 +20,10 @@ export function generateNomadJob(
   jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`
   jobText += `  type = "${configuration.type}"\n\n`
 
-  if (configuration.metadata !== undefined && configuration.metadata.size > 0) {
+  if (configuration.meta !== undefined && configuration.meta.size > 0) {
     jobText += '  meta {\n'
 
-    for (const [key, value] of configuration.metadata) {
+    for (const [key, value] of configuration.meta) {
       jobText += `    ${key} = "${value}"\n`
     }
 

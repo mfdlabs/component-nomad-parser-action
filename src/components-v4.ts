@@ -119,9 +119,9 @@ export function getComponentConfiguration(
     return [false, undefined]
   }
 
-  if (componentConfiguration.deployment.metadata !== undefined) {
-    componentConfiguration.deployment.metadata = new Map(
-      Object.entries(componentConfiguration.deployment.metadata),
+  if (componentConfiguration.deployment.meta !== undefined) {
+    componentConfiguration.deployment.meta = new Map(
+      Object.entries(componentConfiguration.deployment.meta),
     )
   }
 

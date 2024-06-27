@@ -36,7 +36,7 @@ export interface ComponentDeploymentConfiguration {
    * @memberof ComponentDeploymentConfiguration
    * @optional
    */
-  metadata?: Map<string, string>
+  meta?: Map<string, string>
 
   /**
    * The container deployment configuration.
