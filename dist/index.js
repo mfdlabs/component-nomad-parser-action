@@ -25002,8 +25002,8 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
         (0, core_1.warning)(`The deployment type for the component '${componentName}' is invalid`);
         return [false, undefined];
     }
-    if (componentConfiguration.deployment.metadata !== undefined) {
-        componentConfiguration.deployment.metadata = new Map(Object.entries(componentConfiguration.deployment.metadata));
+    if (componentConfiguration.deployment.meta !== undefined) {
+        componentConfiguration.deployment.meta = new Map(Object.entries(componentConfiguration.deployment.meta));
     }
     if (componentConfiguration.deployment.count < 1) {
         (0, core_1.warning)(`The deployment count for the component '${componentName}' must be greater than 0`);
@@ -25310,9 +25310,9 @@ function generateNomadJob(componentName, componentVersion, datacenters, configur
     let jobText = `job "${configuration.job}" {\n`;
     jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`;
     jobText += `  type = "${configuration.type}"\n\n`;
-    if (configuration.metadata !== undefined && configuration.metadata.size > 0) {
+    if (configuration.meta !== undefined && configuration.meta.size > 0) {
         jobText += '  meta {\n';
-        for (const [key, value] of configuration.metadata) {
+        for (const [key, value] of configuration.meta) {
             jobText += `    ${key} = "${value}"\n`;
         }
         jobText += '  }\n\n';
