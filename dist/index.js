@@ -24954,6 +24954,8 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
     // becomes
     // meta:
     //   version: 1.0.0
+    const oldVersion = process.env.VERSION;
+    process.env.VERSION = version;
     const replacedContents = fileContents.replace(/\${{ env.([A-Z_]+) }}/g, (_, envVar) => {
         const value = process.env[envVar];
         if (!value) {
@@ -24962,6 +24964,7 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
         }
         return value;
     });
+    process.env.VERSION = oldVersion;
     let componentConfiguration;
     try {
         componentConfiguration = yaml_1.default.parse(replacedContents);

@@ -37,6 +37,9 @@ export function getComponentConfiguration(
   // meta:
   //   version: 1.0.0
 
+  const oldVersion = process.env.VERSION
+  process.env.VERSION = version
+
   const replacedContents = fileContents.replace(
     /\${{ env.([A-Z_]+) }}/g,
     (_, envVar) => {
@@ -51,6 +54,8 @@ export function getComponentConfiguration(
       return value
     },
   )
+
+  process.env.VERSION = oldVersion
 
   let componentConfiguration: ComponentConfiguration
 
