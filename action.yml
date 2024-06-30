@@ -19,7 +19,9 @@ inputs:
     default: '*'
 
   resources:
-    description: 'The map of components to resources, only needed if components use the env vars'
+    description:
+      'The map of components to resources, only needed if components use the env
+      vars'
     required: false
     default: ''
 
