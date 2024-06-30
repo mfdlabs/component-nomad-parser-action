@@ -24938,14 +24938,14 @@ const core_1 = __nccwpck_require__(2186);
  * @param {string} componentName The name of the component to read.
  * @param {string[]} resources The resources to use for the component.
  * @param {string} componentConfigurationPath The path to the component configuration file.
- * @returns {[boolean, ComponentConfiguration?]} A tuple containing a boolean indicating success and the component configuration.
+ * @returns {ComponentConfiguration?} A tuple containing a boolean indicating success and the component configuration.
  */
 function getComponentConfiguration(componentName, resources, componentConfigurationPath) {
     const [name, version] = componentName.split(':');
     (0, core_1.debug)(`Reading the component configuration for ${name} @ ${version}`);
     if (!fs_1.default.existsSync(componentConfigurationPath)) {
         (0, core_1.warning)(`The component configuration file does not exist: ${componentConfigurationPath}`);
-        return [false, undefined];
+        return undefined;
     }
     const fileContents = fs_1.default.readFileSync(componentConfigurationPath, 'utf8');
     // Before parsing yaml, we need to replace environment expressions
@@ -24991,20 +24991,20 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
     }
     catch (error) {
         (0, core_1.warning)(`Failed to parse the component configuration file: ${error}`);
-        return [false, undefined];
+        return undefined;
     }
     if (!componentConfiguration) {
         (0, core_1.warning)('The component configuration file is empty');
-        return [false, undefined];
+        return undefined;
     }
     if (!componentConfiguration.component ||
         !componentConfiguration.component.trim()) {
         (0, core_1.warning)('The component name is missing from the component configuration file');
-        return [false, undefined];
+        return undefined;
     }
     if (!componentConfiguration.deployment) {
         (0, core_1.warning)(`The component '${componentName}' can not be deployed`);
-        return [false, undefined];
+        return undefined;
     }
     if (componentConfiguration.deployment.count === undefined ||
         isNaN(componentConfiguration.deployment.count)) {
@@ -25020,25 +25020,25 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
     }
     if (!['service', 'system'].includes(componentConfiguration.deployment.type)) {
         (0, core_1.warning)(`The deployment type for the component '${componentName}' is invalid`);
-        return [false, undefined];
+        return undefined;
     }
     if (componentConfiguration.deployment.meta !== undefined) {
         componentConfiguration.deployment.meta = new Map(Object.entries(componentConfiguration.deployment.meta));
     }
     if (componentConfiguration.deployment.count < 1) {
         (0, core_1.warning)(`The deployment count for the component '${componentName}' must be greater than 0`);
-        return [false, undefined];
+        return undefined;
     }
     if (componentConfiguration.deployment.containers === undefined ||
         componentConfiguration.deployment.containers.length === 0) {
         (0, core_1.warning)(`The component '${componentName}' must have at least one container`);
-        return [false, undefined];
+        return undefined;
     }
     for (let i = 0; i < componentConfiguration.deployment.containers.length; i++) {
         const container = componentConfiguration.deployment.containers[i];
         if (!container.image || !container.image.trim()) {
             (0, core_1.warning)(`The image for container ${i + 1} is missing`);
-            return [false, undefined];
+            return undefined;
         }
         if (container.resources !== undefined) {
             if ((container.resources.cpu === undefined ||
@@ -25057,7 +25057,7 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 container.network.mode !== 'host' &&
                 container.network.mode !== 'none') {
                 (0, core_1.warning)(`The network mode for container ${i + 1} is invalid`);
-                return [false, undefined];
+                return undefined;
             }
             if (container.network.ports !== undefined) {
                 container.network.ports = new Map(Object.entries(container.network.ports));
@@ -25066,11 +25066,11 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                     if (port.static !== undefined &&
                         (port.static < 0 || port.static > 65535)) {
                         (0, core_1.warning)(`The static port for container ${i + 1} is invalid`);
-                        return [false, undefined];
+                        return undefined;
                     }
                     if (port.to !== undefined && (port.to < 0 || port.to > 65535)) {
                         (0, core_1.warning)(`The to port for container ${i + 1} is invalid`);
-                        return [false, undefined];
+                        return undefined;
                     }
                 }
             }
@@ -25079,30 +25079,30 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
             for (const service of container.services) {
                 if (!service.name || !service.name.trim()) {
                     (0, core_1.warning)(`The service name for container ${i + 1} is missing`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (service.port === undefined || !service.port.trim()) {
                     (0, core_1.warning)(`The service port for container ${i + 1} is missing`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (!container.network?.ports?.has(service.port)) {
                     (0, core_1.warning)(`The service port for container ${i + 1} is undefined`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (service.checks !== undefined) {
                     for (const check of service.checks) {
                         if (!check.type || !check.type.trim()) {
                             (0, core_1.warning)(`The check type for service ${service.name} is missing`);
-                            return [false, undefined];
+                            return undefined;
                         }
                         if (!['http', 'tcp', 'grpc'].includes(check.type)) {
                             (0, core_1.warning)(`The check type for service ${service.name} is invalid`);
-                            return [false, undefined];
+                            return undefined;
                         }
                         if (check.port !== undefined &&
                             !container.network?.ports?.has(check.port)) {
                             (0, core_1.warning)(`The check port for service ${service.name} is undefined`);
-                            return [false, undefined];
+                            return undefined;
                         }
                     }
                 }
@@ -25113,7 +25113,7 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 // In format: hostPath:containerPath
                 if (!/^.+?:.+?$/.test(volume)) {
                     (0, core_1.warning)(`The volume ${volume} for container ${i + 1} is invalid`);
-                    return [false, undefined];
+                    return undefined;
                 }
             }
         }
@@ -25126,30 +25126,30 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 if (configMap.destination === undefined ||
                     !configMap.destination.trim()) {
                     (0, core_1.warning)(`The config map destination for container ${i + 1} is missing`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (configMap.env === undefined) {
                     configMap.env = true;
                 }
                 if (configMap.env !== true && configMap.env !== false) {
                     (0, core_1.warning)(`The config map env for container ${i + 1} is invalid`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (configMap.on_change === undefined) {
                     configMap.on_change = 'restart';
                 }
                 if (!['restart', 'noop'].includes(configMap.on_change)) {
                     (0, core_1.warning)(`The config map on change for container ${i + 1} is invalid`);
-                    return [false, undefined];
+                    return undefined;
                 }
                 if (configMap.data === undefined || !configMap.data.trim()) {
                     (0, core_1.warning)(`The config map data for container ${i + 1} is missing`);
-                    return [false, undefined];
+                    return undefined;
                 }
             }
         }
     }
-    return [true, componentConfiguration];
+    return componentConfiguration;
 }
 exports.getComponentConfiguration = getComponentConfiguration;
 
@@ -25210,10 +25210,9 @@ async function run() {
                 core.setFailed('Invalid component configuration');
                 return;
             }
-            const [success, componentConfiguration] = (0, components_v4_1.getComponentConfiguration)(component, resources, componentConfigurationPath);
-            if (!success || !componentConfiguration) {
-                core.setFailed(`Failed to read the component configuration for ${component}`);
-                return;
+            const componentConfiguration = (0, components_v4_1.getComponentConfiguration)(component, resources, componentConfigurationPath);
+            if (!componentConfiguration) {
+                continue;
             }
             const [componentName, componentVersion] = component.split(':');
             const job = (0, nomad_job_1.generateNomadJob)(componentName, componentVersion, datacenters, componentConfiguration.deployment);

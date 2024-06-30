@@ -10,13 +10,13 @@ import { ComponentConfiguration } from './models/component_configuration'
  * @param {string} componentName The name of the component to read.
  * @param {string[]} resources The resources to use for the component.
  * @param {string} componentConfigurationPath The path to the component configuration file.
- * @returns {[boolean, ComponentConfiguration?]} A tuple containing a boolean indicating success and the component configuration.
+ * @returns {ComponentConfiguration?} A tuple containing a boolean indicating success and the component configuration.
  */
 export function getComponentConfiguration(
   componentName: string,
   resources: string[],
   componentConfigurationPath: string,
-): [boolean, ComponentConfiguration?] {
+): ComponentConfiguration | undefined {
   const [name, version] = componentName.split(':')
 
   debug(`Reading the component configuration for ${name} @ ${version}`)
@@ -26,7 +26,7 @@ export function getComponentConfiguration(
       `The component configuration file does not exist: ${componentConfigurationPath}`,
     )
 
-    return [false, undefined]
+    return undefined
   }
 
   const fileContents = fs.readFileSync(componentConfigurationPath, 'utf8')
@@ -86,13 +86,13 @@ export function getComponentConfiguration(
   } catch (error) {
     warning(`Failed to parse the component configuration file: ${error}`)
 
-    return [false, undefined]
+    return undefined
   }
 
   if (!componentConfiguration) {
     warning('The component configuration file is empty')
 
-    return [false, undefined]
+    return undefined
   }
 
   if (
@@ -103,13 +103,13 @@ export function getComponentConfiguration(
       'The component name is missing from the component configuration file',
     )
 
-    return [false, undefined]
+    return undefined
   }
 
   if (!componentConfiguration.deployment) {
     warning(`The component '${componentName}' can not be deployed`)
 
-    return [false, undefined]
+    return undefined
   }
 
   if (
@@ -138,7 +138,7 @@ export function getComponentConfiguration(
       `The deployment type for the component '${componentName}' is invalid`,
     )
 
-    return [false, undefined]
+    return undefined
   }
 
   if (componentConfiguration.deployment.meta !== undefined) {
@@ -152,7 +152,7 @@ export function getComponentConfiguration(
       `The deployment count for the component '${componentName}' must be greater than 0`,
     )
 
-    return [false, undefined]
+    return undefined
   }
 
   if (
@@ -161,7 +161,7 @@ export function getComponentConfiguration(
   ) {
     warning(`The component '${componentName}' must have at least one container`)
 
-    return [false, undefined]
+    return undefined
   }
 
   for (
@@ -174,7 +174,7 @@ export function getComponentConfiguration(
     if (!container.image || !container.image.trim()) {
       warning(`The image for container ${i + 1} is missing`)
 
-      return [false, undefined]
+      return undefined
     }
 
     if (container.resources !== undefined) {
@@ -203,7 +203,7 @@ export function getComponentConfiguration(
       ) {
         warning(`The network mode for container ${i + 1} is invalid`)
 
-        return [false, undefined]
+        return undefined
       }
 
       if (container.network.ports !== undefined) {
@@ -219,13 +219,13 @@ export function getComponentConfiguration(
           ) {
             warning(`The static port for container ${i + 1} is invalid`)
 
-            return [false, undefined]
+            return undefined
           }
 
           if (port.to !== undefined && (port.to < 0 || port.to > 65535)) {
             warning(`The to port for container ${i + 1} is invalid`)
 
-            return [false, undefined]
+            return undefined
           }
         }
       }
@@ -236,19 +236,19 @@ export function getComponentConfiguration(
         if (!service.name || !service.name.trim()) {
           warning(`The service name for container ${i + 1} is missing`)
 
-          return [false, undefined]
+          return undefined
         }
 
         if (service.port === undefined || !service.port.trim()) {
           warning(`The service port for container ${i + 1} is missing`)
 
-          return [false, undefined]
+          return undefined
         }
 
         if (!container.network?.ports?.has(service.port)) {
           warning(`The service port for container ${i + 1} is undefined`)
 
-          return [false, undefined]
+          return undefined
         }
 
         if (service.checks !== undefined) {
@@ -256,13 +256,13 @@ export function getComponentConfiguration(
             if (!check.type || !check.type.trim()) {
               warning(`The check type for service ${service.name} is missing`)
 
-              return [false, undefined]
+              return undefined
             }
 
             if (!['http', 'tcp', 'grpc'].includes(check.type)) {
               warning(`The check type for service ${service.name} is invalid`)
 
-              return [false, undefined]
+              return undefined
             }
 
             if (
@@ -271,7 +271,7 @@ export function getComponentConfiguration(
             ) {
               warning(`The check port for service ${service.name} is undefined`)
 
-              return [false, undefined]
+              return undefined
             }
           }
         }
@@ -284,7 +284,7 @@ export function getComponentConfiguration(
         if (!/^.+?:.+?$/.test(volume)) {
           warning(`The volume ${volume} for container ${i + 1} is invalid`)
 
-          return [false, undefined]
+          return undefined
         }
       }
     }
@@ -304,7 +304,7 @@ export function getComponentConfiguration(
             `The config map destination for container ${i + 1} is missing`,
           )
 
-          return [false, undefined]
+          return undefined
         }
 
         if (configMap.env === undefined) {
@@ -314,7 +314,7 @@ export function getComponentConfiguration(
         if (configMap.env !== true && configMap.env !== false) {
           warning(`The config map env for container ${i + 1} is invalid`)
 
-          return [false, undefined]
+          return undefined
         }
 
         if (configMap.on_change === undefined) {
@@ -324,17 +324,17 @@ export function getComponentConfiguration(
         if (!['restart', 'noop'].includes(configMap.on_change)) {
           warning(`The config map on change for container ${i + 1} is invalid`)
 
-          return [false, undefined]
+          return undefined
         }
 
         if (configMap.data === undefined || !configMap.data.trim()) {
           warning(`The config map data for container ${i + 1} is missing`)
 
-          return [false, undefined]
+          return undefined
         }
       }
     }
   }
 
-  return [true, componentConfiguration]
+  return componentConfiguration
 }

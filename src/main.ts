@@ -36,18 +36,14 @@ export async function run(): Promise<void> {
         return
       }
 
-      const [success, componentConfiguration] = getComponentConfiguration(
+      const componentConfiguration = getComponentConfiguration(
         component,
         resources,
         componentConfigurationPath,
       )
 
-      if (!success || !componentConfiguration) {
-        core.setFailed(
-          `Failed to read the component configuration for ${component}`,
-        )
-
-        return
+      if (!componentConfiguration) {
+        continue
       }
 
       const [componentName, componentVersion] = component.split(':')
