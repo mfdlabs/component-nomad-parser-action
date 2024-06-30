@@ -19,6 +19,12 @@ export async function run(): Promise<void> {
       .map(dc => dc.trim())
       .filter(dc => dc.length > 0)
 
+    const resources = core
+      .getInput('resources', { required: false })
+      .split(';')
+      .map(resource => resource.trim())
+      .filter(resource => resource.length > 0)
+
     const ouputJobs: Record<string, string> = {}
 
     for (const [component, componentConfigurationPath] of Object.entries(
@@ -32,6 +38,7 @@ export async function run(): Promise<void> {
 
       const [success, componentConfiguration] = getComponentConfiguration(
         component,
+        resources,
         componentConfigurationPath,
       )
 

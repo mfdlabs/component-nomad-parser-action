@@ -8,11 +8,13 @@ import { ComponentConfiguration } from './models/component_configuration'
 /**
  * Reads, parses, and validates the component configuration from the action's inputs.
  * @param {string} componentName The name of the component to read.
+ * @param {string[]} resources The resources to use for the component.
  * @param {string} componentConfigurationPath The path to the component configuration file.
  * @returns {[boolean, ComponentConfiguration?]} A tuple containing a boolean indicating success and the component configuration.
  */
 export function getComponentConfiguration(
   componentName: string,
+  resources: string[],
   componentConfigurationPath: string,
 ): [boolean, ComponentConfiguration?] {
   const [name, version] = componentName.split(':')
@@ -37,8 +39,30 @@ export function getComponentConfiguration(
   // meta:
   //   version: 1.0.0
 
-  const oldVersion = process.env.VERSION
   process.env.VERSION = version
+  process.env.NOMAD_VERSION = process.env.VERSION
+
+  // Manage NOMAD_CPU and NOMAD_RAM
+  // If the component has resources defined, use them
+  // Otherwise, set them to 500MHz and 256MB
+
+  const resourcesForComponent = resources
+    .map<{ component: string; cpu: string; ram: string }>(resource => {
+      return {
+        component: resource.split(',')[0],
+        cpu: resource.split(',')[1].split(':')[0],
+        ram: resource.split(',')[1].split(':')[1],
+      }
+    })
+    .find(resource => resource.component === name)
+
+  if (resourcesForComponent) {
+    process.env.NOMAD_CPU = resourcesForComponent.cpu
+    process.env.NOMAD_RAM = resourcesForComponent.ram
+  } else {
+    process.env.NOMAD_CPU = '500'
+    process.env.NOMAD_RAM = '256'
+  }
 
   const replacedContents = fileContents.replace(
     /\${{ env.([A-Z_]+) }}/g,
@@ -54,8 +78,6 @@ export function getComponentConfiguration(
       return value
     },
   )
-
-  process.env.VERSION = oldVersion
 
   let componentConfiguration: ComponentConfiguration
 

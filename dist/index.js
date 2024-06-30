@@ -24936,10 +24936,11 @@ const core_1 = __nccwpck_require__(2186);
 /**
  * Reads, parses, and validates the component configuration from the action's inputs.
  * @param {string} componentName The name of the component to read.
+ * @param {string[]} resources The resources to use for the component.
  * @param {string} componentConfigurationPath The path to the component configuration file.
  * @returns {[boolean, ComponentConfiguration?]} A tuple containing a boolean indicating success and the component configuration.
  */
-function getComponentConfiguration(componentName, componentConfigurationPath) {
+function getComponentConfiguration(componentName, resources, componentConfigurationPath) {
     const [name, version] = componentName.split(':');
     (0, core_1.debug)(`Reading the component configuration for ${name} @ ${version}`);
     if (!fs_1.default.existsSync(componentConfigurationPath)) {
@@ -24954,8 +24955,28 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
     // becomes
     // meta:
     //   version: 1.0.0
-    const oldVersion = process.env.VERSION;
     process.env.VERSION = version;
+    process.env.NOMAD_VERSION = process.env.VERSION;
+    // Manage NOMAD_CPU and NOMAD_RAM
+    // If the component has resources defined, use them
+    // Otherwise, set them to 500MHz and 256MB
+    const resourcesForComponent = resources
+        .map(resource => {
+        return {
+            component: resource.split(',')[0],
+            cpu: resource.split(',')[1].split(':')[0],
+            ram: resource.split(',')[1].split(':')[1],
+        };
+    })
+        .find(resource => resource.component === name);
+    if (resourcesForComponent) {
+        process.env.NOMAD_CPU = resourcesForComponent.cpu;
+        process.env.NOMAD_RAM = resourcesForComponent.ram;
+    }
+    else {
+        process.env.NOMAD_CPU = '500';
+        process.env.NOMAD_RAM = '256';
+    }
     const replacedContents = fileContents.replace(/\${{ env.([A-Z_]+) }}/g, (_, envVar) => {
         const value = process.env[envVar];
         if (!value) {
@@ -24964,7 +24985,6 @@ function getComponentConfiguration(componentName, componentConfigurationPath) {
         }
         return value;
     });
-    process.env.VERSION = oldVersion;
     let componentConfiguration;
     try {
         componentConfiguration = yaml_1.default.parse(replacedContents);
@@ -25179,13 +25199,18 @@ async function run() {
         const datacenters = (core.getInput('datacenters', { required: false })?.split(',') || ['*'])
             .map(dc => dc.trim())
             .filter(dc => dc.length > 0);
+        const resources = core
+            .getInput('resources', { required: false })
+            .split(';')
+            .map(resource => resource.trim())
+            .filter(resource => resource.length > 0);
         const ouputJobs = {};
         for (const [component, componentConfigurationPath] of Object.entries(components)) {
             if (!component || !componentConfigurationPath) {
                 core.setFailed('Invalid component configuration');
                 return;
             }
-            const [success, componentConfiguration] = (0, components_v4_1.getComponentConfiguration)(component, componentConfigurationPath);
+            const [success, componentConfiguration] = (0, components_v4_1.getComponentConfiguration)(component, resources, componentConfigurationPath);
             if (!success || !componentConfiguration) {
                 core.setFailed(`Failed to read the component configuration for ${component}`);
                 return;
