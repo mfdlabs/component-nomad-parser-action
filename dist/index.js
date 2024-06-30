@@ -25345,7 +25345,9 @@ exports.generateNetworkSection = void 0;
  */
 function generateNetworkSection(network) {
     let networkText = '    network {\n';
-    networkText += `      mode = "${network.mode}"\n`;
+    if (network.mode !== 'bridge') {
+        networkText += `      mode = "${network.mode}"\n`;
+    }
     if (network.ports !== undefined && network.ports.size > 0) {
         for (const [portName, port] of network.ports) {
             networkText += `\n      port "${portName}" {`;

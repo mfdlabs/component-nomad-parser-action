@@ -10,7 +10,9 @@ export function generateNetworkSection(
 ): string {
   let networkText = '    network {\n'
 
-  networkText += `      mode = "${network.mode}"\n`
+  if (network.mode !== 'bridge') {
+    networkText += `      mode = "${network.mode}"\n`
+  }
 
   if (network.ports !== undefined && network.ports.size > 0) {
     for (const [portName, port] of network.ports) {
