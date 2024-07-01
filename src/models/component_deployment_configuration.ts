@@ -31,6 +31,15 @@ export interface ComponentDeploymentConfiguration {
   job?: string
 
   /**
+   * Optional Vault policies to attach to the Nomad job.
+   * @type {string[]}
+   * @memberof ComponentDeploymentConfiguration
+   * @optional
+   * @remarks If not provided, no policies will be attached.
+   */
+  vault_policies?: string[]
+
+  /**
    * Any metadata to attach to the Nomad job.
    * @type {Record<string, string>}
    * @memberof ComponentDeploymentConfiguration

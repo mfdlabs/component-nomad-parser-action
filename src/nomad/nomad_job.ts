@@ -20,6 +20,12 @@ export function generateNomadJob(
   jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`
   jobText += `  type = "${configuration.type}"\n\n`
 
+  if (configuration.vault_policies !== undefined) {
+    jobText += '  vault {\n'
+    jobText += `    policies = ${JSON.stringify(configuration.vault_policies)}\n`
+    jobText += '  }\n\n'
+  }
+
   if (configuration.meta !== undefined && configuration.meta.size > 0) {
     jobText += '  meta {\n'
 
