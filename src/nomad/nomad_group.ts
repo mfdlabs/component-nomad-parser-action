@@ -45,13 +45,7 @@ export function generateGroupSection(
     configuration?.volumes !== undefined &&
     configuration.volumes.length > 0
   ) {
-    groupText += `\n        volumes = [\n`
-
-    for (const volume of configuration.volumes) {
-      groupText += `          "${volume}"\n`
-    }
-
-    groupText += `        ]\n`
+    groupText += `\n        volumes = ${JSON.stringify(configuration.volumes)}\n`
   }
 
   if (

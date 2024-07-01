@@ -25270,11 +25270,7 @@ function generateGroupSection(componentName, componentVersion, count, configurat
     }
     if (configuration?.volumes !== undefined &&
         configuration.volumes.length > 0) {
-        groupText += `\n        volumes = [\n`;
-        for (const volume of configuration.volumes) {
-            groupText += `          "${volume}"\n`;
-        }
-        groupText += `        ]\n`;
+        groupText += `\n        volumes = ${JSON.stringify(configuration.volumes)}\n`;
     }
     if (configuration?.driver_opts !== undefined &&
         configuration.driver_opts.size > 0) {
