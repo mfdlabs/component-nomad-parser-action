@@ -30,6 +30,14 @@ export function generateServiceSection(
         serviceText += `          path = "${check.path}"\n`
       }
 
+      if (check.interval !== undefined) {
+        serviceText += `          interval = "${check.interval}"\n`
+      }
+
+      if (check.timeout !== undefined) {
+        serviceText += `          timeout = "${check.timeout}"\n`
+      }
+
       serviceText += '        }\n'
     }
   }

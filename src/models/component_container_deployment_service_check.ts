@@ -28,4 +28,22 @@ export interface ComponentContainerDeploymentServiceCheck {
    * @optional
    */
   path?: string
+
+  /**
+   * Gets the interval to check.
+   * @type {string}
+   * @memberof ComponentContainerDeploymentServiceCheck
+   * @optional
+   * @default '5s'
+   */
+  interval?: string
+
+  /**
+   * Gets the timeout to check.
+   * @type {string}
+   * @memberof ComponentContainerDeploymentServiceCheck
+   * @optional
+   * @default '2s'
+   */
+  timeout?: string
 }

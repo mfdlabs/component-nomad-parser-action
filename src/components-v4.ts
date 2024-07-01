@@ -265,6 +265,14 @@ export function getComponentConfiguration(
               return undefined
             }
 
+            if (check.interval === undefined) {
+              check.interval = '5s'
+            }
+
+            if (check.timeout === undefined) {
+              check.timeout = '2s'
+            }
+
             if (
               check.port !== undefined &&
               !container.network?.ports?.has(check.port)

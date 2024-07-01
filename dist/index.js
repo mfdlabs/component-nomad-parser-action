@@ -25099,6 +25099,12 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                             (0, core_1.warning)(`The check type for service ${service.name} is invalid`);
                             return undefined;
                         }
+                        if (check.interval === undefined) {
+                            check.interval = '5s';
+                        }
+                        if (check.timeout === undefined) {
+                            check.timeout = '2s';
+                        }
                         if (check.port !== undefined &&
                             !container.network?.ports?.has(check.port)) {
                             (0, core_1.warning)(`The check port for service ${service.name} is undefined`);
@@ -25454,6 +25460,12 @@ function generateServiceSection(service) {
             }
             if (check.path !== undefined) {
                 serviceText += `          path = "${check.path}"\n`;
+            }
+            if (check.interval !== undefined) {
+                serviceText += `          interval = "${check.interval}"\n`;
+            }
+            if (check.timeout !== undefined) {
+                serviceText += `          timeout = "${check.timeout}"\n`;
             }
             serviceText += '        }\n';
         }
