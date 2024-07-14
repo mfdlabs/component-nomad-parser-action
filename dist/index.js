@@ -25081,13 +25081,11 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                     (0, core_1.warning)(`The service name for container ${i + 1} is missing`);
                     return undefined;
                 }
-                if (service.port === undefined || !service.port.trim()) {
-                    (0, core_1.warning)(`The service port for container ${i + 1} is missing`);
-                    return undefined;
-                }
-                if (!container.network?.ports?.has(service.port)) {
-                    (0, core_1.warning)(`The service port for container ${i + 1} is undefined`);
-                    return undefined;
+                if (service.port !== undefined) {
+                    if (!container.network?.ports?.has(service.port)) {
+                        (0, core_1.warning)(`The service port for container ${i + 1} is undefined`);
+                        return undefined;
+                    }
                 }
                 if (service.checks !== undefined) {
                     for (const check of service.checks) {
@@ -25447,7 +25445,9 @@ exports.generateServiceSection = void 0;
 function generateServiceSection(service) {
     let serviceText = '      service {\n';
     serviceText += `        name = "${service.name}"\n`;
-    serviceText += `        port = "${service.port}"\n`;
+    if (service.port !== undefined) {
+        serviceText += `        port = "${service.port}"\n`;
+    }
     if (service.tags !== undefined && service.tags.length > 0) {
         serviceText += `\n        tags = ${JSON.stringify(service.tags)}\n`;
     }

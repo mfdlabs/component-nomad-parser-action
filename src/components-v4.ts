@@ -239,16 +239,12 @@ export function getComponentConfiguration(
           return undefined
         }
 
-        if (service.port === undefined || !service.port.trim()) {
-          warning(`The service port for container ${i + 1} is missing`)
+        if (service.port !== undefined) {
+          if (!container.network?.ports?.has(service.port)) {
+            warning(`The service port for container ${i + 1} is undefined`)
 
-          return undefined
-        }
-
-        if (!container.network?.ports?.has(service.port)) {
-          warning(`The service port for container ${i + 1} is undefined`)
-
-          return undefined
+            return undefined
+          }
         }
 
         if (service.checks !== undefined) {

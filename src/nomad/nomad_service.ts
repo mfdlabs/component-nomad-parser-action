@@ -11,7 +11,10 @@ export function generateServiceSection(
   let serviceText = '      service {\n'
 
   serviceText += `        name = "${service.name}"\n`
-  serviceText += `        port = "${service.port}"\n`
+
+  if (service.port !== undefined) {
+    serviceText += `        port = "${service.port}"\n`
+  }
 
   if (service.tags !== undefined && service.tags.length > 0) {
     serviceText += `\n        tags = ${JSON.stringify(service.tags)}\n`
