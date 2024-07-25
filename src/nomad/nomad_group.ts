@@ -42,6 +42,13 @@ export function generateGroupSection(
   }
 
   if (
+    configuration?.network?.ports !== undefined &&
+    configuration.network.ports.size > 0
+  ) {
+    groupText += `        ports = ${JSON.stringify(Array.from(configuration.network.ports.keys()))}\n`
+  }
+
+  if (
     configuration?.volumes !== undefined &&
     configuration.volumes.length > 0
   ) {

@@ -25272,6 +25272,10 @@ function generateGroupSection(componentName, componentVersion, count, configurat
     if (configuration?.network?.mode === 'host') {
         groupText += `        network_mode = "host"\n`;
     }
+    if (configuration?.network?.ports !== undefined &&
+        configuration.network.ports.size > 0) {
+        groupText += `        ports = ${JSON.stringify(Array.from(configuration.network.ports.keys()))}\n`;
+    }
     if (configuration?.volumes !== undefined &&
         configuration.volumes.length > 0) {
         groupText += `\n        volumes = ${JSON.stringify(configuration.volumes)}\n`;
