@@ -25338,6 +25338,9 @@ function generateNomadJob(componentName, componentVersion, datacenters, configur
     let jobText = `job "${configuration.job}" {\n`;
     jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`;
     jobText += `  type = "${configuration.type}"\n\n`;
+    if (configuration.namespace !== undefined && configuration.namespace !== '') {
+        jobText += `  namespace = "${configuration.namespace}"\n\n`;
+    }
     if (configuration.vault_policies !== undefined) {
         jobText += '  vault {\n';
         jobText += `    policies = ${JSON.stringify(configuration.vault_policies)}\n`;

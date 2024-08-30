@@ -14,6 +14,15 @@ export interface ComponentDeploymentConfiguration {
   count?: number
 
   /**
+   * The namespace to deploy the component into.
+   * @type {string}
+   * @memberof ComponentDeploymentConfiguration
+   * @optional
+   * @remarks If not provided, the default namespace will be used.
+   */
+  namespace?: string
+
+  /**
    * The type of Nomad job.
    * @type {ComponentContainerDeploymentConfigurationType}
    * @memberof ComponentDeploymentConfiguration
