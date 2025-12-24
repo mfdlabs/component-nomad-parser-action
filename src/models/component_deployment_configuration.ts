@@ -1,5 +1,6 @@
 import { ComponentContainerDeploymentConfigurationType } from './types/component_container_deployment_configuration_type'
 import { ComponentContainerDeploymentConfiguration } from './component_container_deployment_configuration'
+import { ComponentContainerDeploymentConstraint } from './component_container_deployment_constraint'
 
 /**
  * Component Deployment Configuration model
@@ -23,6 +24,15 @@ export interface ComponentDeploymentConfiguration {
   namespace?: string
 
   /**
+   * Gets the constraints to apply.
+   * @type {ComponentContainerDeploymentConstraint[]}
+   * @memberof ComponentContainerDeploymentConfiguration
+   * @optional
+   * @remarks Maps to job.constraints.
+   */
+  constraints?: ComponentContainerDeploymentConstraint[]
+
+  /**
    * The type of Nomad job.
    * @type {ComponentContainerDeploymentConfigurationType}
    * @memberof ComponentDeploymentConfiguration
@@ -40,13 +50,13 @@ export interface ComponentDeploymentConfiguration {
   job?: string
 
   /**
-   * Optional Vault policies to attach to the Nomad job.
+   * Optional Vault role to attach to the Nomad job.
    * @type {string[]}
    * @memberof ComponentDeploymentConfiguration
    * @optional
-   * @remarks If not provided, no policies will be attached.
+   * @remarks If not provided, no role will be attached.
    */
-  vault_policies?: string[]
+  vault_role?: string
 
   /**
    * Any metadata to attach to the Nomad job.

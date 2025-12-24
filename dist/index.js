@@ -25341,10 +25341,25 @@ function generateNomadJob(componentName, componentVersion, datacenters, configur
     if (configuration.namespace !== undefined && configuration.namespace !== '') {
         jobText += `  namespace = "${configuration.namespace}"\n\n`;
     }
-    if (configuration.vault_policies !== undefined) {
+    if (configuration.vault_role !== undefined) {
         jobText += '  vault {\n';
-        jobText += `    policies = ${JSON.stringify(configuration.vault_policies)}\n`;
+        jobText += `    role = "${configuration.vault_role}"\n`;
         jobText += '  }\n\n';
+    }
+    if (configuration.count !== undefined) {
+        jobText += `  update {\n    max_parallel = ${configuration.count}\n  }\n\n`;
+    }
+    if (configuration.constraints !== undefined &&
+        configuration.constraints.length > 0) {
+        for (const constraint of configuration.constraints) {
+            jobText += '  constraint {\n';
+            jobText += `    attribute = "${constraint.attribute}"\n`;
+            jobText += `    operator  = "${constraint.operator}"\n`;
+            if (constraint.value !== undefined) {
+                jobText += `    value     = "${constraint.value}"\n`;
+            }
+            jobText += '  }\n\n';
+        }
     }
     if (configuration.meta !== undefined && configuration.meta.size > 0) {
         jobText += '  meta {\n';
