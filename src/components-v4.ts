@@ -349,6 +349,10 @@ export function getComponentConfiguration(
           return undefined
         }
 
+        if (!configMap.perms || !configMap.perms.trim()) {
+          configMap.perms = '644'
+        }
+
         if (!configMap.data || !configMap.data.trim()) {
           warning(`The config map data for container ${i + 1} is missing`)
 

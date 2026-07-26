@@ -24,6 +24,15 @@ export interface ComponentContainerDeploymentConfigMap {
   env?: boolean
 
   /**
+   * Gets the permissions for the config map
+   * @type {string}
+   * @memberof ComponentContainerDeploymentConfigMap
+   * @optional
+   * @default '644'
+   */
+  perms?: string
+
+  /**
    * Gets the change mode for the config map.
    * @type {ComponentContainerDeploymentConfigMapChangeMode}
    * @memberof ComponentContainerDeploymentConfigMap

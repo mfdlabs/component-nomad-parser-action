@@ -13,6 +13,7 @@ export function generateTemplateSection(
   templateText += `        data = <<EOF\n${configMap.data}EOF\n`
   templateText += `        destination = "${configMap.destination}"\n`
   templateText += `        change_mode = "${configMap.on_change}"\n`
+  templateText += `        perms = "${configMap.perms}"\n`
   templateText += `        env = ${configMap.env ? 'true' : 'false'}\n`
 
   templateText += '      }\n'

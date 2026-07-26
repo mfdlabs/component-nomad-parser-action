@@ -25164,6 +25164,9 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                     (0, core_1.warning)(`The config map on change for container ${i + 1} is invalid`);
                     return undefined;
                 }
+                if (!configMap.perms || !configMap.perms.trim()) {
+                    configMap.perms = '644';
+                }
                 if (!configMap.data || !configMap.data.trim()) {
                     (0, core_1.warning)(`The config map data for container ${i + 1} is missing`);
                     return undefined;
@@ -25575,6 +25578,7 @@ function generateTemplateSection(configMap) {
     templateText += `        data = <<EOF\n${configMap.data}EOF\n`;
     templateText += `        destination = "${configMap.destination}"\n`;
     templateText += `        change_mode = "${configMap.on_change}"\n`;
+    templateText += `        perms = "${configMap.perms}"\n`;
     templateText += `        env = ${configMap.env ? 'true' : 'false'}\n`;
     templateText += '      }\n';
     return templateText;
