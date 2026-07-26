@@ -25006,7 +25006,7 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
         (0, core_1.warning)(`The component '${componentName}' can not be deployed`);
         return undefined;
     }
-    if (componentConfiguration.deployment.count === undefined ||
+    if (!componentConfiguration.deployment.count ||
         isNaN(componentConfiguration.deployment.count)) {
         componentConfiguration.deployment.count = 1;
     }
@@ -25014,7 +25014,7 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
         !componentConfiguration.deployment.job.trim()) {
         componentConfiguration.deployment.job = componentName.split(':')[0];
     }
-    if (componentConfiguration.deployment.type === undefined ||
+    if (!componentConfiguration.deployment.type ||
         !componentConfiguration.deployment.type.trim()) {
         componentConfiguration.deployment.type = 'service';
     }
@@ -25022,14 +25022,14 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
         (0, core_1.warning)(`The deployment type for the component '${componentName}' is invalid`);
         return undefined;
     }
-    if (componentConfiguration.deployment.meta !== undefined) {
+    if (componentConfiguration.deployment.meta) {
         componentConfiguration.deployment.meta = new Map(Object.entries(componentConfiguration.deployment.meta));
     }
     if (componentConfiguration.deployment.count < 1) {
         (0, core_1.warning)(`The deployment count for the component '${componentName}' must be greater than 0`);
         return undefined;
     }
-    if (componentConfiguration.deployment.containers === undefined ||
+    if (!componentConfiguration.deployment.containers ||
         componentConfiguration.deployment.containers.length === 0) {
         (0, core_1.warning)(`The component '${componentName}' must have at least one container`);
         return undefined;
@@ -25040,17 +25040,14 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
             (0, core_1.warning)(`The image for container ${i + 1} is missing`);
             return undefined;
         }
-        if (container.resources !== undefined) {
-            if ((container.resources.cpu === undefined ||
-                isNaN(container.resources.cpu)) &&
-                (container.resources.ram === undefined ||
-                    isNaN(container.resources.ram))) {
+        if (container.resources) {
+            if ((!container.resources.cpu || isNaN(container.resources.cpu)) &&
+                (!container.resources.ram || isNaN(container.resources.ram))) {
                 container.resources = undefined;
             }
         }
-        if (container.network !== undefined) {
-            if (container.network.mode === undefined ||
-                !container.network.mode.trim()) {
+        if (container.network) {
+            if (!container.network.mode || !container.network.mode.trim()) {
                 container.network.mode = 'bridge';
             }
             if (container.network.mode !== 'bridge' &&
@@ -25059,35 +25056,34 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 (0, core_1.warning)(`The network mode for container ${i + 1} is invalid`);
                 return undefined;
             }
-            if (container.network.ports !== undefined) {
+            if (container.network.ports) {
                 container.network.ports = new Map(Object.entries(container.network.ports));
                 for (const [, port] of container.network.ports) {
                     // Range check on static and to
-                    if (port.static !== undefined &&
-                        (port.static < 0 || port.static > 65535)) {
+                    if (port.static && (port.static < 0 || port.static > 65535)) {
                         (0, core_1.warning)(`The static port for container ${i + 1} is invalid`);
                         return undefined;
                     }
-                    if (port.to !== undefined && (port.to < 0 || port.to > 65535)) {
+                    if (port.to && (port.to < 0 || port.to > 65535)) {
                         (0, core_1.warning)(`The to port for container ${i + 1} is invalid`);
                         return undefined;
                     }
                 }
             }
         }
-        if (container.services !== undefined) {
+        if (container.services) {
             for (const service of container.services) {
                 if (!service.name || !service.name.trim()) {
                     (0, core_1.warning)(`The service name for container ${i + 1} is missing`);
                     return undefined;
                 }
-                if (service.port !== undefined) {
+                if (service.port) {
                     if (!container.network?.ports?.has(service.port)) {
                         (0, core_1.warning)(`The service port for container ${i + 1} is undefined`);
                         return undefined;
                     }
                 }
-                if (service.checks !== undefined) {
+                if (service.checks) {
                     for (const check of service.checks) {
                         if (!check.type || !check.type.trim()) {
                             (0, core_1.warning)(`The check type for service ${service.name} is missing`);
@@ -25097,14 +25093,13 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                             (0, core_1.warning)(`The check type for service ${service.name} is invalid`);
                             return undefined;
                         }
-                        if (check.interval === undefined) {
+                        if (!check.interval) {
                             check.interval = '5s';
                         }
-                        if (check.timeout === undefined) {
+                        if (!check.timeout) {
                             check.timeout = '2s';
                         }
-                        if (check.port !== undefined &&
-                            !container.network?.ports?.has(check.port)) {
+                        if (check.port && !container.network?.ports?.has(check.port)) {
                             (0, core_1.warning)(`The check port for service ${service.name} is undefined`);
                             return undefined;
                         }
@@ -25112,7 +25107,7 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 }
             }
         }
-        if (container.volumes !== undefined) {
+        if (container.volumes) {
             for (const volume of container.volumes) {
                 // In format: hostPath:containerPath
                 if (!/^.+?:.+?$/.test(volume)) {
@@ -25121,14 +25116,37 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                 }
             }
         }
-        if (container.driver_opts !== undefined) {
+        if (container.driver_opts) {
             container.driver_opts = new Map(Object.entries(container.driver_opts));
         }
-        if (container.config_maps !== undefined) {
+        if (container.artifacts) {
+            for (const artifact of container.artifacts) {
+                if (!artifact.source || !artifact.source.trim()) {
+                    (0, core_1.warning)(`The artifact source for container ${i + 1} is missing`);
+                    return undefined;
+                }
+                if (!artifact.destination || !artifact.destination.trim()) {
+                    artifact.destination = '/local';
+                }
+                if (!artifact.mode || !artifact.mode.trim()) {
+                    artifact.mode = 'any';
+                }
+                if (!['any', 'file', 'dir'].includes(artifact.mode)) {
+                    (0, core_1.warning)(`The artifact mode for container ${i + 1} is invalid`);
+                    return undefined;
+                }
+                if (artifact.options) {
+                    artifact.options = new Map(Object.entries(artifact.options));
+                }
+                if (artifact.headers) {
+                    artifact.headers = new Map(Object.entries(artifact.headers));
+                }
+            }
+        }
+        if (container.config_maps) {
             for (const configMap of container.config_maps) {
                 // In format: configMapName:containerPath
-                if (configMap.destination === undefined ||
-                    !configMap.destination.trim()) {
+                if (!configMap.destination || !configMap.destination.trim()) {
                     (0, core_1.warning)(`The config map destination for container ${i + 1} is missing`);
                     return undefined;
                 }
@@ -25139,14 +25157,14 @@ function getComponentConfiguration(componentName, resources, componentConfigurat
                     (0, core_1.warning)(`The config map env for container ${i + 1} is invalid`);
                     return undefined;
                 }
-                if (configMap.on_change === undefined) {
+                if (!configMap.on_change) {
                     configMap.on_change = 'restart';
                 }
                 if (!['restart', 'noop'].includes(configMap.on_change)) {
                     (0, core_1.warning)(`The config map on change for container ${i + 1} is invalid`);
                     return undefined;
                 }
-                if (configMap.data === undefined || !configMap.data.trim()) {
+                if (!configMap.data || !configMap.data.trim()) {
                     (0, core_1.warning)(`The config map data for container ${i + 1} is missing`);
                     return undefined;
                 }
@@ -25235,6 +25253,45 @@ exports.run = run;
 
 /***/ }),
 
+/***/ 2987:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.generateArtifactSection = void 0;
+/**
+ * Generates a artifact section for a Nomad job
+ * @param {ComponentContainerDeploymentArtifiact} artifact - The artifact configuration for the container
+ * @returns {string} - The constructed HCL template section
+ */
+function generateArtifactSection(artifact) {
+    let artifactText = '      artififact {\n';
+    artifactText += `        source = "${artifact.source}"\n`;
+    artifactText += `        destination = "${artifact.destination}"\n`;
+    artifactText += `        mode = "${artifact.mode}"\n`;
+    if (artifact.options && artifact.options.size > 0) {
+        artifactText += 'options {\n';
+        for (const [key, value] of artifact.options) {
+            artifactText += `          ${key} = "${value}"\n`;
+        }
+        artifactText += '        }\n';
+    }
+    if (artifact.headers && artifact.headers.size > 0) {
+        artifactText += 'headers {\n';
+        for (const [key, value] of artifact.headers) {
+            artifactText += `          ${key} = "${value}"\n`;
+        }
+        artifactText += '        }\n';
+    }
+    artifactText += '      }\n';
+    return artifactText;
+}
+exports.generateArtifactSection = generateArtifactSection;
+
+
+/***/ }),
+
 /***/ 6616:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -25246,6 +25303,7 @@ const nomad_network_1 = __nccwpck_require__(7954);
 const nomad_resources_1 = __nccwpck_require__(5640);
 const nomad_template_1 = __nccwpck_require__(1903);
 const nomad_service_1 = __nccwpck_require__(1280);
+const nomad_artifact_1 = __nccwpck_require__(2987);
 /**
  * Generates a group section for a Nomad job
  * @param {string} componentName - The name of the component
@@ -25257,7 +25315,7 @@ const nomad_service_1 = __nccwpck_require__(1280);
 function generateGroupSection(componentName, componentVersion, count, configuration) {
     let groupText = `  group "${componentName}" {\n`;
     groupText += `    count = ${count}\n\n`;
-    if (configuration.network !== undefined) {
+    if (configuration.network) {
         groupText += (0, nomad_network_1.generateNetworkSection)(configuration.network);
     }
     groupText += `\n    task "${componentName}" {\n`;
@@ -25272,16 +25330,13 @@ function generateGroupSection(componentName, componentVersion, count, configurat
     if (configuration?.network?.mode === 'host') {
         groupText += `        network_mode = "host"\n`;
     }
-    if (configuration?.network?.ports !== undefined &&
-        configuration.network.ports.size > 0) {
+    if (configuration?.network?.ports && configuration.network.ports.size > 0) {
         groupText += `        ports = ${JSON.stringify(Array.from(configuration.network.ports.keys()))}\n`;
     }
-    if (configuration?.volumes !== undefined &&
-        configuration.volumes.length > 0) {
+    if (configuration?.volumes && configuration.volumes.length > 0) {
         groupText += `\n        volumes = ${JSON.stringify(configuration.volumes)}\n`;
     }
-    if (configuration?.driver_opts !== undefined &&
-        configuration.driver_opts.size > 0) {
+    if (configuration?.driver_opts && configuration.driver_opts.size > 0) {
         groupText += '\n';
         for (const [key, value] of configuration.driver_opts) {
             // Extra args on the config section
@@ -25289,19 +25344,23 @@ function generateGroupSection(componentName, componentVersion, count, configurat
         }
     }
     groupText += `      }\n\n`;
-    if (configuration.resources !== undefined) {
+    if (configuration.resources) {
         groupText += (0, nomad_resources_1.generateResourcesSection)(configuration.resources);
         groupText += '\n';
     }
-    if (configuration?.config_maps !== undefined &&
-        configuration.config_maps.length > 0) {
+    if (configuration?.artifacts && configuration.artifacts.length > 0) {
+        for (const artifact of configuration.artifacts) {
+            groupText += (0, nomad_artifact_1.generateArtifactSection)(artifact);
+            groupText += '\n';
+        }
+    }
+    if (configuration?.config_maps && configuration.config_maps.length > 0) {
         for (const configMap of configuration.config_maps) {
             groupText += (0, nomad_template_1.generateTemplateSection)(configMap);
             groupText += '\n';
         }
     }
-    if (configuration?.services !== undefined &&
-        configuration.services.length > 0) {
+    if (configuration?.services && configuration.services.length > 0) {
         for (const service of configuration.services) {
             groupText += (0, nomad_service_1.generateServiceSection)(service);
             groupText += '\n';
@@ -25338,30 +25397,29 @@ function generateNomadJob(componentName, componentVersion, datacenters, configur
     let jobText = `job "${configuration.job}" {\n`;
     jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`;
     jobText += `  type = "${configuration.type}"\n\n`;
-    if (configuration.namespace !== undefined && configuration.namespace !== '') {
+    if (configuration.namespace && configuration.namespace !== '') {
         jobText += `  namespace = "${configuration.namespace}"\n\n`;
     }
-    if (configuration.vault_role !== undefined) {
+    if (configuration.vault_role && configuration.vault_role !== '') {
         jobText += '  vault {\n';
         jobText += `    role = "${configuration.vault_role}"\n`;
         jobText += '  }\n\n';
     }
-    if (configuration.count !== undefined) {
+    if (configuration.count && configuration.count > 0) {
         jobText += `  update {\n    max_parallel = ${configuration.count}\n  }\n\n`;
     }
-    if (configuration.constraints !== undefined &&
-        configuration.constraints.length > 0) {
+    if (configuration.constraints && configuration.constraints.length > 0) {
         for (const constraint of configuration.constraints) {
             jobText += '  constraint {\n';
             jobText += `    attribute = "${constraint.attribute}"\n`;
             jobText += `    operator  = "${constraint.operator}"\n`;
-            if (constraint.value !== undefined) {
+            if (constraint.value) {
                 jobText += `    value     = "${constraint.value}"\n`;
             }
             jobText += '  }\n\n';
         }
     }
-    if (configuration.meta !== undefined && configuration.meta.size > 0) {
+    if (configuration.meta && configuration.meta.size > 0) {
         jobText += '  meta {\n';
         for (const [key, value] of configuration.meta) {
             jobText += `    ${key} = "${value}"\n`;
@@ -25399,16 +25457,16 @@ function generateNetworkSection(network) {
     if (network.mode !== 'bridge') {
         networkText += `      mode = "${network.mode}"\n`;
     }
-    if (network.ports !== undefined && network.ports.size > 0) {
+    if (network.ports && network.ports.size > 0) {
         for (const [portName, port] of network.ports) {
             networkText += `\n      port "${portName}" {`;
-            if (port.to !== undefined) {
+            if (port.to) {
                 networkText += `\n        to = ${port.to}\n`;
             }
-            if (port.static !== undefined) {
+            if (port.static) {
                 networkText += `\n        static = ${port.static}\n`;
             }
-            if (port.static === undefined && port.to === undefined) {
+            if (!port.static && !port.to) {
                 networkText += '}\n';
             }
             else {
@@ -25438,10 +25496,10 @@ exports.generateResourcesSection = void 0;
  */
 function generateResourcesSection(resources) {
     let resourcesText = '      resources {\n';
-    if (resources.cpu !== undefined) {
+    if (resources.cpu) {
         resourcesText += `        cpu = ${resources.cpu}\n`;
     }
-    if (resources.ram !== undefined) {
+    if (resources.ram) {
         resourcesText += `        memory = ${resources.ram}\n`;
     }
     resourcesText += '      }\n';
@@ -25467,26 +25525,26 @@ exports.generateServiceSection = void 0;
 function generateServiceSection(service) {
     let serviceText = '      service {\n';
     serviceText += `        name = "${service.name}"\n`;
-    if (service.port !== undefined) {
+    if (service.port) {
         serviceText += `        port = "${service.port}"\n`;
     }
-    if (service.tags !== undefined && service.tags.length > 0) {
+    if (service.tags && service.tags.length > 0) {
         serviceText += `\n        tags = ${JSON.stringify(service.tags)}\n`;
     }
-    if (service.checks !== undefined && service.checks.length > 0) {
+    if (service.checks && service.checks.length > 0) {
         for (const check of service.checks) {
             serviceText += '\n        check {\n';
             serviceText += `          type = "${check.type}"\n`;
-            if (check.port !== undefined) {
+            if (check.port) {
                 serviceText += `          port = "${check.port}"\n`;
             }
-            if (check.path !== undefined) {
+            if (check.path) {
                 serviceText += `          path = "${check.path}"\n`;
             }
-            if (check.interval !== undefined) {
+            if (check.interval) {
                 serviceText += `          interval = "${check.interval}"\n`;
             }
-            if (check.timeout !== undefined) {
+            if (check.timeout) {
                 serviceText += `          timeout = "${check.timeout}"\n`;
             }
             serviceText += '        }\n';

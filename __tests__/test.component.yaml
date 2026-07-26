@@ -1,81 +1,88 @@
 component: grid-bot
 
-# This is only used by the build worklow,
-# it determines how the component is built
-# Docker only relevant when the argument
-#
 build:
   project_file: src/Grid.Bot.csproj
   component_directory: ./.deploy
 
   additional_args:
-    - -p:IMAGE_TAG=${{ env.VERSION }}
+    - -p:IMAGE_TAG=${{ env.NOMAD_VERSION }}
     - -p:CI=true
 
   docker:
     docker_file: Dockerfile
     image_name: mfdlabs/grid-bot
-    build_args:
-      - IMAGE_TAG=${{ env.VERSION }}
 
 deployment:
   count: 1
+  namespace: grid-bot
 
   job: grid-bot-${{ env.NOMAD_SHORT_ENVIRONMENT }}
 
   # Passed to the meta section in Nomad
   meta:
     ENVIRONMENT: ${{ env.NOMAD_ENVIRONMENT }}
+    VERSION: ${{ env.NOMAD_VERSION }}
+
+  constraints:
+    - attribute: '${meta.deployment.capabilities}'
+      operator: 'set_contains'
+      value: 'grid-bot'
 
   containers: # Maps to the groups section in Nomad
     - image: mfdlabs/grid-bot
-
-      # The reason it is 2Khz here is because the initialization phase of the bot
-      # uses a TON of CPU, but then it drops down to 200-300mhz
-      # GRIDBOT-2819: Investigate why the bot uses so much CPU during initialization
       resources:
-        cpu: 2000
-        ram: 1000
-
-      # Network mode is host because the interaction layer between the bot and the grid
-      # server containers has issues when using bridge mode (sudden connection aborts)
-      # This will become bridge when GSaaS (grid-servers-as-a-service) is fully implemented
-      # GRIDBOT-2187: Investigate why the bot has connection issues when using bridge mode
+        cpu: ${{ env.NOMAD_CPU }}
+        ram: ${{ env.NOMAD_RAM }}
       network:
         mode: host
         ports:
-          metrics:
-            to: 8101
-          grpc:
-            to: 5000
-
-      # TODO: Implement dedicated health checks
-      # instead of relying on the metrics endpoint
+          metrics: {}
+          grpc: {}
+          http: {}
       services:
-        - name: grid-bot-${{ env.NOMAD_SHORT_ENVIRONMENT }}
+        - name: ${{ env.NOMAD_ENVIRONMENT }}-grid-bot
           port: metrics
           tags:
             - ${{ env.NOMAD_ENVIRONMENT }}
+            - prometheus # For prometheus collector
           checks:
-            - type: http
-              path: /metrics
+            - type: tcp
 
-      # How many of these are actually needed?
+        - name: ${{ env.NOMAD_ENVIRONMENT }}-grid-bot
+          port: http
+          tags:
+            - ${{ env.NOMAD_ENVIRONMENT }}
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.${{ env.NOMAD_ENVIRONMENT
+              }}-grid-bot-web.rule=(Host(`clientsettingscdn.sitetest4.robloxlabs.com`)
+              || Host(`versioncompatibility.api.sitetest4.robloxlabs.com`) ||
+              Host(`avatar.sitetest4.robloxlabs.com`))'
+            - 'traefik.http.routers.${{ env.NOMAD_ENVIRONMENT
+              }}-grid-bot-web.entrypoints=http,https'
+
       volumes:
         - '/var/run/docker.sock:/var/run/docker.sock'
         - '/tmp/.X11-unix:/tmp/.X11-unix'
-        - '/opt/grid/scripts:/opt/grid/scripts'
-        - '/_/_logs/grid-bot/${{ env.NOMAD_ENVIRONMENT }}:/tmp/mfdlabs/logs'
 
-      driver_opts:
-        hostname: grid-bot-${{ env.NOMAD_SHORT_ENVIRONMENT }}.service.consul
+        - '/_/_data/grid-bot/scripts:/_/_data/grid-bot/scripts'
+        - '/_/_data/grid-bot/logs:/tmp/mfdlabs/logs'
+        - '/_/_data/grid-bot/rcc-logs:/_/_data/grid-bot/rcc-logs'
+
+      artifacts:
+        - source: 'https://example.com/path/to/artifact.zip'
+          destination: 'local/path/to/artifact.zip'
+          mode: 'file' # or 'dir' or 'any'
 
       config_maps:
         - destination: secrets/file.env
           env: true
           on_change: restart
           data: |
+            MetricsBindAddress="http://{{ env "NOMAD_IP_metrics" }}:{{ env "NOMAD_PORT_metrics" }}"
+            WebServerBindAddress="http://{{ env "NOMAD_IP_http" }}:{{ env "NOMAD_PORT_http" }}"
+            GridBotGrpcServerEndpoint="http://{{ env "NOMAD_IP_grpc" }}:{{ env "NOMAD_PORT_grpc" }}"
+
             DISPLAY=:1
             DEFAULT_LOG_LEVEL=Information
-            VAULT_ADDR="http://vault.service.consul:8200"
-            VAULT_TOKEN="{{ with secret "grid-bot-settings/grid-bot-vault" }}{{ .Data.data.vault_token }}{{ end }}"
+            VAULT_ADDR="${{ env.VAULT_ADDR }}"
+            VAULT_TOKEN="${{ env.VAULT_TOKEN }}"

@@ -14,19 +14,19 @@ export function generateNetworkSection(
     networkText += `      mode = "${network.mode}"\n`
   }
 
-  if (network.ports !== undefined && network.ports.size > 0) {
+  if (network.ports && network.ports.size > 0) {
     for (const [portName, port] of network.ports) {
       networkText += `\n      port "${portName}" {`
 
-      if (port.to !== undefined) {
+      if (port.to) {
         networkText += `\n        to = ${port.to}\n`
       }
 
-      if (port.static !== undefined) {
+      if (port.static) {
         networkText += `\n        static = ${port.static}\n`
       }
 
-      if (port.static === undefined && port.to === undefined) {
+      if (!port.static && !port.to) {
         networkText += '}\n'
       } else {
         networkText += '      }\n'

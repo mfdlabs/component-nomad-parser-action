@@ -1,3 +1,4 @@
+import { ComponentContainerDeploymentArtifiact } from './component_container_deployment_artifact'
 import { ComponentContainerDeploymentConfigMap } from './component_container_deployment_config_map'
 import { ComponentContainerDeploymentNetwork } from './component_container_deployment_network'
 import { ComponentContainerDeploymentResources } from './component_container_deployment_resources'
@@ -61,11 +62,20 @@ export interface ComponentContainerDeploymentConfiguration {
   driver_opts?: Map<string, string>
 
   /**
+   * Gets the artifacts to expose.
+   * @type {ComponentContainerDeploymentArtifiact[]}
+   * @memberof ComponentContainerDeploymentNetwork
+   * @optional
+   * @remarks Maps to job.group.task.artifacts.
+   */
+  artifacts?: ComponentContainerDeploymentArtifiact[]
+
+  /**
    * Gets the config maps to expose.
    * @type {ComponentContainerDeploymentConfigMap[]}
    * @memberof ComponentContainerDeploymentNetwork
    * @optional
-   * @remarks Maps to job.group.templates.
+   * @remarks Maps to job.group.task.templates.
    */
   config_maps?: ComponentContainerDeploymentConfigMap[]
 }

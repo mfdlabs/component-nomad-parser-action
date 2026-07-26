@@ -10,11 +10,11 @@ export function generateResourcesSection(
 ): string {
   let resourcesText = '      resources {\n'
 
-  if (resources.cpu !== undefined) {
+  if (resources.cpu) {
     resourcesText += `        cpu = ${resources.cpu}\n`
   }
 
-  if (resources.ram !== undefined) {
+  if (resources.ram) {
     resourcesText += `        memory = ${resources.ram}\n`
   }
 

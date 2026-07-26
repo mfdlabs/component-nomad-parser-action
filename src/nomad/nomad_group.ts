@@ -4,6 +4,7 @@ import { generateNetworkSection } from './nomad_network'
 import { generateResourcesSection } from './nomad_resources'
 import { generateTemplateSection } from './nomad_template'
 import { generateServiceSection } from './nomad_service'
+import { generateArtifactSection } from './nomad_artifact'
 
 /**
  * Generates a group section for a Nomad job
@@ -23,7 +24,7 @@ export function generateGroupSection(
 
   groupText += `    count = ${count}\n\n`
 
-  if (configuration.network !== undefined) {
+  if (configuration.network) {
     groupText += generateNetworkSection(configuration.network)
   }
 
@@ -41,24 +42,15 @@ export function generateGroupSection(
     groupText += `        network_mode = "host"\n`
   }
 
-  if (
-    configuration?.network?.ports !== undefined &&
-    configuration.network.ports.size > 0
-  ) {
+  if (configuration?.network?.ports && configuration.network.ports.size > 0) {
     groupText += `        ports = ${JSON.stringify(Array.from(configuration.network.ports.keys()))}\n`
   }
 
-  if (
-    configuration?.volumes !== undefined &&
-    configuration.volumes.length > 0
-  ) {
+  if (configuration?.volumes && configuration.volumes.length > 0) {
     groupText += `\n        volumes = ${JSON.stringify(configuration.volumes)}\n`
   }
 
-  if (
-    configuration?.driver_opts !== undefined &&
-    configuration.driver_opts.size > 0
-  ) {
+  if (configuration?.driver_opts && configuration.driver_opts.size > 0) {
     groupText += '\n'
 
     for (const [key, value] of configuration.driver_opts) {
@@ -69,25 +61,26 @@ export function generateGroupSection(
 
   groupText += `      }\n\n`
 
-  if (configuration.resources !== undefined) {
+  if (configuration.resources) {
     groupText += generateResourcesSection(configuration.resources)
     groupText += '\n'
   }
 
-  if (
-    configuration?.config_maps !== undefined &&
-    configuration.config_maps.length > 0
-  ) {
+  if (configuration?.artifacts && configuration.artifacts.length > 0) {
+    for (const artifact of configuration.artifacts) {
+      groupText += generateArtifactSection(artifact)
+      groupText += '\n'
+    }
+  }
+
+  if (configuration?.config_maps && configuration.config_maps.length > 0) {
     for (const configMap of configuration.config_maps) {
       groupText += generateTemplateSection(configMap)
       groupText += '\n'
     }
   }
 
-  if (
-    configuration?.services !== undefined &&
-    configuration.services.length > 0
-  ) {
+  if (configuration?.services && configuration.services.length > 0) {
     for (const service of configuration.services) {
       groupText += generateServiceSection(service)
       groupText += '\n'

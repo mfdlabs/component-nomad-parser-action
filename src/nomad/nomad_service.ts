@@ -12,32 +12,32 @@ export function generateServiceSection(
 
   serviceText += `        name = "${service.name}"\n`
 
-  if (service.port !== undefined) {
+  if (service.port) {
     serviceText += `        port = "${service.port}"\n`
   }
 
-  if (service.tags !== undefined && service.tags.length > 0) {
+  if (service.tags && service.tags.length > 0) {
     serviceText += `\n        tags = ${JSON.stringify(service.tags)}\n`
   }
 
-  if (service.checks !== undefined && service.checks.length > 0) {
+  if (service.checks && service.checks.length > 0) {
     for (const check of service.checks) {
       serviceText += '\n        check {\n'
       serviceText += `          type = "${check.type}"\n`
 
-      if (check.port !== undefined) {
+      if (check.port) {
         serviceText += `          port = "${check.port}"\n`
       }
 
-      if (check.path !== undefined) {
+      if (check.path) {
         serviceText += `          path = "${check.path}"\n`
       }
 
-      if (check.interval !== undefined) {
+      if (check.interval) {
         serviceText += `          interval = "${check.interval}"\n`
       }
 
-      if (check.timeout !== undefined) {
+      if (check.timeout) {
         serviceText += `          timeout = "${check.timeout}"\n`
       }
 

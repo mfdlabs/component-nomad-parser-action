@@ -20,37 +20,34 @@ export function generateNomadJob(
   jobText += `  datacenters = ${JSON.stringify(datacenters)}\n`
   jobText += `  type = "${configuration.type}"\n\n`
 
-  if (configuration.namespace !== undefined && configuration.namespace !== '') {
+  if (configuration.namespace && configuration.namespace !== '') {
     jobText += `  namespace = "${configuration.namespace}"\n\n`
   }
 
-  if (configuration.vault_role !== undefined) {
+  if (configuration.vault_role && configuration.vault_role !== '') {
     jobText += '  vault {\n'
     jobText += `    role = "${configuration.vault_role}"\n`
     jobText += '  }\n\n'
   }
 
-  if (configuration.count !== undefined) {
+  if (configuration.count && configuration.count > 0) {
     jobText += `  update {\n    max_parallel = ${configuration.count}\n  }\n\n`
   }
 
-  if (
-    configuration.constraints !== undefined &&
-    configuration.constraints.length > 0
-  ) {
+  if (configuration.constraints && configuration.constraints.length > 0) {
     for (const constraint of configuration.constraints) {
       jobText += '  constraint {\n'
       jobText += `    attribute = "${constraint.attribute}"\n`
       jobText += `    operator  = "${constraint.operator}"\n`
 
-      if (constraint.value !== undefined) {
+      if (constraint.value) {
         jobText += `    value     = "${constraint.value}"\n`
       }
       jobText += '  }\n\n'
     }
   }
 
-  if (configuration.meta !== undefined && configuration.meta.size > 0) {
+  if (configuration.meta && configuration.meta.size > 0) {
     jobText += '  meta {\n'
 
     for (const [key, value] of configuration.meta) {

@@ -113,7 +113,7 @@ export function getComponentConfiguration(
   }
 
   if (
-    componentConfiguration.deployment.count === undefined ||
+    !componentConfiguration.deployment.count ||
     isNaN(componentConfiguration.deployment.count)
   ) {
     componentConfiguration.deployment.count = 1
@@ -127,7 +127,7 @@ export function getComponentConfiguration(
   }
 
   if (
-    componentConfiguration.deployment.type === undefined ||
+    !componentConfiguration.deployment.type ||
     !componentConfiguration.deployment.type.trim()
   ) {
     componentConfiguration.deployment.type = 'service'
@@ -141,7 +141,7 @@ export function getComponentConfiguration(
     return undefined
   }
 
-  if (componentConfiguration.deployment.meta !== undefined) {
+  if (componentConfiguration.deployment.meta) {
     componentConfiguration.deployment.meta = new Map(
       Object.entries(componentConfiguration.deployment.meta),
     )
@@ -156,7 +156,7 @@ export function getComponentConfiguration(
   }
 
   if (
-    componentConfiguration.deployment.containers === undefined ||
+    !componentConfiguration.deployment.containers ||
     componentConfiguration.deployment.containers.length === 0
   ) {
     warning(`The component '${componentName}' must have at least one container`)
@@ -177,22 +177,17 @@ export function getComponentConfiguration(
       return undefined
     }
 
-    if (container.resources !== undefined) {
+    if (container.resources) {
       if (
-        (container.resources.cpu === undefined ||
-          isNaN(container.resources.cpu)) &&
-        (container.resources.ram === undefined ||
-          isNaN(container.resources.ram))
+        (!container.resources.cpu || isNaN(container.resources.cpu)) &&
+        (!container.resources.ram || isNaN(container.resources.ram))
       ) {
         container.resources = undefined
       }
     }
 
-    if (container.network !== undefined) {
-      if (
-        container.network.mode === undefined ||
-        !container.network.mode.trim()
-      ) {
+    if (container.network) {
+      if (!container.network.mode || !container.network.mode.trim()) {
         container.network.mode = 'bridge'
       }
 
@@ -206,23 +201,20 @@ export function getComponentConfiguration(
         return undefined
       }
 
-      if (container.network.ports !== undefined) {
+      if (container.network.ports) {
         container.network.ports = new Map(
           Object.entries(container.network.ports),
         )
 
         for (const [, port] of container.network.ports) {
           // Range check on static and to
-          if (
-            port.static !== undefined &&
-            (port.static < 0 || port.static > 65535)
-          ) {
+          if (port.static && (port.static < 0 || port.static > 65535)) {
             warning(`The static port for container ${i + 1} is invalid`)
 
             return undefined
           }
 
-          if (port.to !== undefined && (port.to < 0 || port.to > 65535)) {
+          if (port.to && (port.to < 0 || port.to > 65535)) {
             warning(`The to port for container ${i + 1} is invalid`)
 
             return undefined
@@ -231,7 +223,7 @@ export function getComponentConfiguration(
       }
     }
 
-    if (container.services !== undefined) {
+    if (container.services) {
       for (const service of container.services) {
         if (!service.name || !service.name.trim()) {
           warning(`The service name for container ${i + 1} is missing`)
@@ -239,7 +231,7 @@ export function getComponentConfiguration(
           return undefined
         }
 
-        if (service.port !== undefined) {
+        if (service.port) {
           if (!container.network?.ports?.has(service.port)) {
             warning(`The service port for container ${i + 1} is undefined`)
 
@@ -247,7 +239,7 @@ export function getComponentConfiguration(
           }
         }
 
-        if (service.checks !== undefined) {
+        if (service.checks) {
           for (const check of service.checks) {
             if (!check.type || !check.type.trim()) {
               warning(`The check type for service ${service.name} is missing`)
@@ -261,18 +253,15 @@ export function getComponentConfiguration(
               return undefined
             }
 
-            if (check.interval === undefined) {
+            if (!check.interval) {
               check.interval = '5s'
             }
 
-            if (check.timeout === undefined) {
+            if (!check.timeout) {
               check.timeout = '2s'
             }
 
-            if (
-              check.port !== undefined &&
-              !container.network?.ports?.has(check.port)
-            ) {
+            if (check.port && !container.network?.ports?.has(check.port)) {
               warning(`The check port for service ${service.name} is undefined`)
 
               return undefined
@@ -282,7 +271,7 @@ export function getComponentConfiguration(
       }
     }
 
-    if (container.volumes !== undefined) {
+    if (container.volumes) {
       for (const volume of container.volumes) {
         // In format: hostPath:containerPath
         if (!/^.+?:.+?$/.test(volume)) {
@@ -293,17 +282,46 @@ export function getComponentConfiguration(
       }
     }
 
-    if (container.driver_opts !== undefined) {
+    if (container.driver_opts) {
       container.driver_opts = new Map(Object.entries(container.driver_opts))
     }
 
-    if (container.config_maps !== undefined) {
+    if (container.artifacts) {
+      for (const artifact of container.artifacts) {
+        if (!artifact.source || !artifact.source.trim()) {
+          warning(`The artifact source for container ${i + 1} is missing`)
+
+          return undefined
+        }
+
+        if (!artifact.destination || !artifact.destination.trim()) {
+          artifact.destination = '/local'
+        }
+
+        if (!artifact.mode || !artifact.mode.trim()) {
+          artifact.mode = 'any'
+        }
+
+        if (!['any', 'file', 'dir'].includes(artifact.mode)) {
+          warning(`The artifact mode for container ${i + 1} is invalid`)
+
+          return undefined
+        }
+
+        if (artifact.options) {
+          artifact.options = new Map(Object.entries(artifact.options))
+        }
+
+        if (artifact.headers) {
+          artifact.headers = new Map(Object.entries(artifact.headers))
+        }
+      }
+    }
+
+    if (container.config_maps) {
       for (const configMap of container.config_maps) {
         // In format: configMapName:containerPath
-        if (
-          configMap.destination === undefined ||
-          !configMap.destination.trim()
-        ) {
+        if (!configMap.destination || !configMap.destination.trim()) {
           warning(
             `The config map destination for container ${i + 1} is missing`,
           )
@@ -321,7 +339,7 @@ export function getComponentConfiguration(
           return undefined
         }
 
-        if (configMap.on_change === undefined) {
+        if (!configMap.on_change) {
           configMap.on_change = 'restart'
         }
 
@@ -331,7 +349,7 @@ export function getComponentConfiguration(
           return undefined
         }
 
-        if (configMap.data === undefined || !configMap.data.trim()) {
+        if (!configMap.data || !configMap.data.trim()) {
           warning(`The config map data for container ${i + 1} is missing`)
 
           return undefined
