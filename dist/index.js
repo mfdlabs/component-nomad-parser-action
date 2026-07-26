@@ -25266,7 +25266,7 @@ exports.generateArtifactSection = void 0;
  * @returns {string} - The constructed HCL template section
  */
 function generateArtifactSection(artifact) {
-    let artifactText = '      artififact {\n';
+    let artifactText = '      artifact {\n';
     artifactText += `        source = "${artifact.source}"\n`;
     artifactText += `        destination = "${artifact.destination}"\n`;
     artifactText += `        mode = "${artifact.mode}"\n`;

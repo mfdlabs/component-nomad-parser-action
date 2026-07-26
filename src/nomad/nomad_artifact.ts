@@ -8,7 +8,7 @@ import { ComponentContainerDeploymentArtifiact } from '../models/component_conta
 export function generateArtifactSection(
   artifact: ComponentContainerDeploymentArtifiact,
 ): string {
-  let artifactText = '      artififact {\n'
+  let artifactText = '      artifact {\n'
 
   artifactText += `        source = "${artifact.source}"\n`
   artifactText += `        destination = "${artifact.destination}"\n`
